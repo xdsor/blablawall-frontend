@@ -3,7 +3,7 @@
     <div class="w-100">
       <post-list-item-title [post]="post()"/>
       <p class="card-text">{{ post().preview }}</p>
-      <post-list-item-last-reply-info *ngIf="post().lastReplyer" [post]="post()"/>
+      <post-list-item-last-reply-info *ngIf="post().lastReplier" [post]="post()"/>
       <app-post-list-item-activity-info [post]="post()"/>
     </div>
   </div>
