@@ -1,0 +1,9 @@
+<div class="text-muted mb-2 d-flex align-items-center">
+  <i class="bi bi-chat-dots me-1"></i>
+  <small class="me-2">Последний ответ от</small>
+  <img [src]="post().lastReplyer?.avatarUrl" alt="Replyer Avatar" class="rounded-circle me-1" width="24" height="24">
+  <small>
+    {{ post().lastReplyer?.nickname }}
+    <i class="bi bi-clock ms-2"></i> {{ post().lastReplyDate | date: 'yyyy.MM.dd HH:mm:ss' }}
+  </small>
+</div>

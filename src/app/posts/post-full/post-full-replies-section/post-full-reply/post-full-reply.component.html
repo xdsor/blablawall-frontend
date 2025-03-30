@@ -1,0 +1,23 @@
+<div class="d-flex mb-2">
+  <img [src]="reply().author.avatarUrl" alt="Аватар комментатора" class="rounded-circle me-2" width="40" height="40">
+  <div class="w-100">
+    <div>
+      <strong class="me-2">{{ reply().author.nickname }}</strong>
+      <small class="text-muted">
+        <i class="bi bi-clock"></i> {{ reply().postedAt | date:'yyyy.MM.dd HH:mm:ss' }}
+      </small>
+    </div>
+    <p class="mb-1">{{ reply().content }}</p>
+    <post-full-reply-button (onClick)="showReplyForm = !showReplyForm">
+      <i class="bi bi-reply"></i> Ответить
+    </post-full-reply-button>
+    <div *ngIf="showReplyForm" class="mt-2">
+      <post-full-reply-form/>
+    </div>
+    <div *ngIf="reply().replies?.length" class="ms-4 mt-3">
+      @for (innerReply of reply().replies; track innerReply.id) {
+        <post-full-reply [reply]="innerReply"/>
+      }
+    </div>
+  </div>
+</div>

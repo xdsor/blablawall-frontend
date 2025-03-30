@@ -1,0 +1,12 @@
+.card {
+  border-radius: 0.5rem;
+}
+.card-body {
+  padding: 1.5rem;
+}
+.card-title {
+  margin-bottom: 0.75rem;
+}
+.card-text {
+  margin-bottom: 1rem;
+}
