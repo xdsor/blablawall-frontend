@@ -1,0 +1,11 @@
+<div
+  class="alert alert-dismissible fade show" role="alert"
+  [ngClass]="{
+    'alert-info': notification().infoType === TechnicalNotificationType.INFO,
+    'alert-success': notification().infoType === TechnicalNotificationType.SUCCESS,
+    'alert-danger': notification().infoType === TechnicalNotificationType.ERROR
+  }"
+  (mouseenter)="onClose()">
+  {{ notification().text }}
+  <button type="button" class="btn-close" aria-label="Close" (click)="onClose()"></button>
+</div>

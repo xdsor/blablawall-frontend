@@ -16,7 +16,7 @@ import {PostsService} from "../services/posts.service";
   styleUrl: './post-full.component.css'
 })
 export class PostFullComponent {
-  private postsService = inject(PostsService);
+  private readonly postsService = inject(PostsService);
   post: PostFull | undefined = undefined;
 
   @Input("id")

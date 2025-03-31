@@ -12,11 +12,17 @@
       <i class="bi bi-reply"></i> Ответить
     </post-full-reply-button>
     <div *ngIf="showReplyForm" class="mt-2">
-      <post-full-reply-form/>
+      <post-full-reply-form
+        [postId]="postId()"
+        [replyTo]="reply().id"
+        (replySubmitted)="onSubmitReply($event)"/>
     </div>
     <div *ngIf="reply().replies?.length" class="ms-4 mt-3">
       @for (innerReply of reply().replies; track innerReply.id) {
-        <post-full-reply [reply]="innerReply"/>
+        <post-full-reply
+          [reply]="innerReply"
+          [postId]="postId()"
+          (replySubmitted)="onSubmitReply($event)"/>
       }
     </div>
   </div>

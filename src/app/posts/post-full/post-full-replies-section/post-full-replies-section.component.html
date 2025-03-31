@@ -2,10 +2,15 @@
     <h5><i class="bi bi-chat-dots"></i> Ответы</h5>
     <div class="mb-4">
         <h5>Добавить ответ</h5>
-        <post-full-reply-form/>
+        <post-full-reply-form
+          [postId]="post().id"
+          (replySubmitted)="submitReply($event)"/>
     </div>
     @for (reply of post().replies; track reply.id) {
-        <post-full-reply [reply]="reply"/>
+        <post-full-reply
+          [reply]="reply"
+          [postId]="post().id"
+          (replySubmitted)="submitReply($event)"/>
     }
 </div>
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {PostListItem} from '../models/PostListItem';
 import {Observable} from 'rxjs';
 import {PostFull} from '../models/PostFull';
+import {NewPostDto, ReplyDto} from './dto/PostDtos';
 
 @Injectable({
   providedIn: 'root'
@@ -177,5 +178,13 @@ export class PostsService {
       observer.next(this.post)
       observer.complete()
     })
+  }
+
+  addNewPost(post: NewPostDto) {
+    console.log(`${JSON.stringify(post)} posted!!!`);
+  }
+
+  addNewReply(reply: ReplyDto) {
+    console.log(`${JSON.stringify(reply)} posted!!!`);
   }
 }

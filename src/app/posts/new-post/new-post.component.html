@@ -1,0 +1,28 @@
+<h1 class="mb-4">Добавление нового поста</h1>
+<form (ngSubmit)="addNewPost()" #postForm="ngForm">
+  <div class="mb-3">
+    <label for="title" class="form-label">Заголовок</label>
+    <input
+      type="text"
+      id="title"
+      class="form-control"
+      placeholder="Введите заголовок поста"
+      required
+      [(ngModel)]="model.title"
+      name="title">
+  </div>
+  <div class="mb-3">
+    <label for="content" class="form-label">Основной контент</label>
+    <textarea
+      id="content"
+      class="form-control"
+      rows="6"
+      placeholder="Введите текст поста"
+      required
+      [(ngModel)]="model.content"
+      name="content"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary" [disabled]="postForm.invalid">
+    Опубликовать
+  </button>
+</form>

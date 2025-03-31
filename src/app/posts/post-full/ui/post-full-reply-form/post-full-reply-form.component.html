@@ -1,6 +1,14 @@
-<form>
+<form (ngSubmit)="onSubmit()" #replyForm="ngForm">
   <div class="input-group d-flex flex-column">
-    <textarea type="text" class="form-control w-100" placeholder="Ваш ответ" name="newReply"></textarea>
-    <post-full-reply-button>Ответить</post-full-reply-button>
+    <textarea
+      class="form-control w-100"
+      placeholder="Ваш ответ"
+      name="newReply"
+      [(ngModel)]="replyText"
+      required>
+    </textarea>
+    <post-full-reply-button type="submit">
+      Ответить
+    </post-full-reply-button>
   </div>
 </form>
