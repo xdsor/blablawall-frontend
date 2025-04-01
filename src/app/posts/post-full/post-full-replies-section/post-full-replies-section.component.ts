@@ -1,12 +1,9 @@
-import {Component, inject, input} from '@angular/core';
+import {Component, input, output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {PostFull} from '../../models/PostFull';
 import {PostFullReplyComponent} from "./post-full-reply/post-full-reply.component";
 import {PostFullReplyFormComponent} from "../ui/post-full-reply-form/post-full-reply-form.component";
-import {ReplyDto} from '../../services/dto/PostDtos';
-import {PostsService} from '../../services/posts.service';
-import {TechnicalNotificationsService} from '../../../technical-notifications/technical-notifications.service';
-import {TechnicalNotificationType} from '../../../technical-notifications/models/TechnicalNotification';
+import {CreateNewReplyRequest} from '../../services/dto/PostDtos';
 
 @Component({
   selector: 'post-full-replies-section',
@@ -19,19 +16,9 @@ import {TechnicalNotificationType} from '../../../technical-notifications/models
   styleUrl: './post-full-replies-section.component.css'
 })
 export class PostFullRepliesSectionComponent {
-  private readonly postsService = inject(PostsService);
-  private readonly technicalNotificationsService = inject(TechnicalNotificationsService);
   post = input.required<PostFull>()
-
-  submitReply(event: ReplyDto) {
-    this.postsService.addNewReply({
-      postId: event.postId,
-      text: event.text,
-      replyTo: event.replyTo,
-    });
-    this.technicalNotificationsService.fireNotification(
-      "Ответ успешно добавлен!",
-      TechnicalNotificationType.SUCCESS
-    )
+  replySubmitted = output<CreateNewReplyRequest>()
+  onSubmitReply(event: CreateNewReplyRequest) {
+    this.replySubmitted.emit(event);
   }
 }

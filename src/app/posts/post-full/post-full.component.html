@@ -1,8 +1,10 @@
 <div class="container mt-3">
-    @if (post) {
-        <post-full-post-section [post]="post"/>
-        <post-full-replies-section [post]="post"/>
-    } @else {
-        <h1>Упс, не удалось загрузить пост :(</h1>
-    }
+  @if (loading()) {
+    <loading-component/>
+  } @else if (post()) {
+    <post-full-post-section [post]="post()!!"/>
+    <post-full-replies-section [post]="post()!!" (replySubmitted)="submitReply($event)"/>
+  } @else {
+    <h1>Упс, не удалось загрузить пост :(</h1>
+  }
 </div>

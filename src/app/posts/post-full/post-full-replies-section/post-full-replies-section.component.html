@@ -4,13 +4,13 @@
         <h5>Добавить ответ</h5>
         <post-full-reply-form
           [postId]="post().id"
-          (replySubmitted)="submitReply($event)"/>
+          (replySubmitted)="onSubmitReply($event)"/>
     </div>
     @for (reply of post().replies; track reply.id) {
         <post-full-reply
           [reply]="reply"
           [postId]="post().id"
-          (replySubmitted)="submitReply($event)"/>
+          (replySubmitted)="onSubmitReply($event)"/>
     }
 </div>
 

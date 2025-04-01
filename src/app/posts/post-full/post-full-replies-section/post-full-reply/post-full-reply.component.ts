@@ -4,7 +4,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {PostReply} from '../../../models/PostFull';
 import {PostFullReplyFormComponent} from '../../ui/post-full-reply-form/post-full-reply-form.component';
 import {PostFullReplyButtonComponent} from '../../ui/post-full-reply-button/post-full-reply-button.component';
-import {ReplyDto} from '../../../services/dto/PostDtos';
+import {CreateNewReplyRequest} from '../../../services/dto/PostDtos';
 
 @Component({
   selector: 'post-full-reply',
@@ -22,10 +22,10 @@ import {ReplyDto} from '../../../services/dto/PostDtos';
 export class PostFullReplyComponent {
   postId = input.required<number>();
   reply = input.required<PostReply>()
-  replySubmitted = output<ReplyDto>()
+  replySubmitted = output<CreateNewReplyRequest>()
   showReplyForm = false
 
-  onSubmitReply(event: ReplyDto) {
+  onSubmitReply(event: CreateNewReplyRequest) {
     this.replySubmitted.emit(event);
   }
 }

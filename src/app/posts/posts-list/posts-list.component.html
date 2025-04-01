@@ -2,6 +2,12 @@
   <h1>Посты</h1>
   <a class="link-light" routerLink="/posts/new">Новый пост</a>
 </div>
-@for (post of posts; track post.id) {
-  <posts-list-item [post]="post"/>
+@if (loading()) {
+  <loading-component/>
+} @else if (posts) {
+  @for (post of posts; track post.id) {
+    <posts-list-item [post]="post"/>
+  }
+} @else {
+  <h1>Упс, не удалось загрузить посты :(</h1>
 }

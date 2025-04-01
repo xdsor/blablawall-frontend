@@ -1,7 +1,7 @@
 import {Component, input, output} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {PostFullReplyButtonComponent} from '../post-full-reply-button/post-full-reply-button.component';
-import {ReplyDto} from '../../../services/dto/PostDtos';
+import {CreateNewReplyRequest} from '../../../services/dto/PostDtos';
 
 @Component({
   selector: 'post-full-reply-form',
@@ -18,7 +18,7 @@ export class PostFullReplyFormComponent {
   postId = input.required<number>()
   replyText = '';
 
-  replySubmitted = output<ReplyDto>()
+  replySubmitted = output<CreateNewReplyRequest>()
 
   onSubmit() {
     const replyDto = {

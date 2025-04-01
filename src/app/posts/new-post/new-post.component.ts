@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {NewPostDto} from '../services/dto/PostDtos';
 import {Router} from '@angular/router';
@@ -17,7 +17,9 @@ import {TechnicalNotificationType} from '../../technical-notifications/models/Te
 export class NewPostComponent {
   private readonly router = inject(Router)
   private readonly postsService = inject(PostsService);
-  private readonly techicalNotificationsService = inject(TechnicalNotificationsService);
+  private readonly technicalNotificationsService = inject(TechnicalNotificationsService);
+
+  loading = signal(false)
 
   model: NewPostDto = {
     title: '',
@@ -25,12 +27,23 @@ export class NewPostComponent {
   }
 
   addNewPost(): void {
-    this.postsService.addNewPost(this.model)
-    this.techicalNotificationsService.fireNotification(
-      `Пост ${this.model.title} успешно добавлен`,
-      TechnicalNotificationType.SUCCESS
-    )
-    this.router.navigate(['/'])
+    this.loading.set(true)
+    this.postsService.addNewPost(this.model).subscribe({
+      next: _ => {
+        this.technicalNotificationsService.fireNotification(
+          `Пост ${this.model.title} успешно добавлен`,
+          TechnicalNotificationType.SUCCESS
+        )
+        this.router.navigate(['/'])
+      },
+      error: _ => {
+        this.technicalNotificationsService.fireNotification(
+          `Не удалось добавить пост :(`,
+          TechnicalNotificationType.ERROR
+        )
+        this.loading.set(false)
+      }
+    })
   }
 
 }

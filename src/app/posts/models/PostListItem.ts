@@ -1,10 +1,16 @@
 import {UserPreview} from '../../shared/models/User';
+import {PageInfo} from '../../shared/models/PageInfo';
+
+export interface PostListItemsWithPageInfo {
+  pageInfo: PageInfo;
+  posts: PostListItem[];
+}
 
 export interface PostListItem {
   id: number;
   author: UserPreview;
-  lastReplier?: UserPreview;  // null если нет комментариев
-  lastReplyDate?: Date; // null если нет комментариев
+  lastReplier?: UserPreview;
+  lastReplyDate?: Date;
   postedAt: Date;
   title: string;
   preview: string;
