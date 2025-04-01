@@ -1,5 +1,5 @@
 import {Component, input} from '@angular/core';
-import {PostListItem} from '../../../models/PostListItem';
+import {PostListItem} from '../../models/PostListItem';
 import {DatePipe} from '@angular/common';
 import {RouterLink} from '@angular/router';
 
