@@ -4,19 +4,19 @@ import {PostFull, PostReply} from './PostFull';
 
 export function postListItemsWithPageInfoDtoToDomain(p: PostListItemsWithPageInfoDto): PostListItemsWithPageInfo {
   return {
-    posts: p._embedded.postPreviewDtoList.map((listItem): PostListItem => {
-      return {
-        id: listItem.id,
-        author: listItem.author,
-        lastReplier: listItem.lastReplier,
-        lastReplyDate: listItem.lastReplyDate == undefined ? undefined : new Date(listItem.lastReplyDate),
-        postedAt: new Date(listItem.postedAt),
-        title: listItem.title,
-        preview: listItem.preview,
-        likes: listItem.likes,
-        repliesCount: listItem.repliesCount
-      }
-    }),
+    posts: p._embedded == undefined ? [] : p._embedded.postPreviewDtoList.map((listItem): PostListItem => {
+    return {
+      id: listItem.id,
+      author: listItem.author,
+      lastReplier: listItem.lastReplier,
+      lastReplyDate: listItem.lastReplyDate == undefined ? undefined : new Date(listItem.lastReplyDate),
+      postedAt: new Date(listItem.postedAt),
+      title: listItem.title,
+      preview: listItem.preview,
+      likes: listItem.likes,
+      repliesCount: listItem.repliesCount
+    }
+  }),
     pageInfo: p.page
   }
 }

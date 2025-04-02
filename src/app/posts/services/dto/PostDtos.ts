@@ -25,7 +25,7 @@ export interface PostListItemDto {
 }
 
 export interface PostListItemsWithPageInfoDto {
-  _embedded: {
+  _embedded?: {
     postPreviewDtoList: PostListItemDto[];
   }
   page: PageInfo

@@ -1,0 +1,27 @@
+/* Стили для кнопок входа по брендам */
+
+/* Кнопка для Яндекса */
+.btn-yandex {
+  background-color: #FF0000; /* Красный цвет для Яндекса */
+  color: #ffffff;
+  border: none;
+}
+
+.btn-yandex:hover,
+.btn-yandex:focus {
+  background-color: #cc0000; /* Более тёмный оттенок при наведении */
+  color: #ffffff;
+}
+
+/* Кнопка для Github */
+.btn-github {
+  background-color: #24292e; /* Тёмный оттенок для Github */
+  color: #ffffff;
+  border: none;
+}
+
+.btn-github:hover,
+.btn-github:focus {
+  background-color: #1b1f23; /* Более тёмный оттенок при наведении */
+  color: #ffffff;
+}

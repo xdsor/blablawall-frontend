@@ -17,18 +17,18 @@ export class PostsService {
   constructor(private http: HttpClient) { }
 
   getAllPosts(): Observable<PostListItemsWithPageInfoDto> {
-    return this.http.get<PostListItemsWithPageInfoDto>(`${BACKEND_URL}/posts`)
+    return this.http.get<PostListItemsWithPageInfoDto>(`${BACKEND_URL}/api/posts`)
   }
 
   getPostById(id: number): Observable<PostFullDto> {
-    return this.http.get<PostFullDto>(`${BACKEND_URL}/posts/${id}`)
+    return this.http.get<PostFullDto>(`${BACKEND_URL}/api/posts/${id}`)
   }
 
   addNewPost(post: NewPostDto): Observable<PostFullDto> {
-    return this.http.post<PostFullDto>(`${BACKEND_URL}/posts`, post)
+    return this.http.post<PostFullDto>(`${BACKEND_URL}/api/posts`, post)
   }
 
   addNewReply(postId: number, reply: CreateNewReplyRequest): Observable<PostFullDto> {
-    return this.http.post<PostFullDto>(`${BACKEND_URL}/posts/${postId}/reply`, reply)
+    return this.http.post<PostFullDto>(`${BACKEND_URL}/api/posts/${postId}/reply`, reply)
   }
 }
