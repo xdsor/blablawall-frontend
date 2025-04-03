@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import {BACKEND_URL} from '../constants';
+import {BACKEND_URL} from '../../constants';
 
 @Component({
-  selector: 'login',
+  selector: 'login-component',
   imports: [],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
