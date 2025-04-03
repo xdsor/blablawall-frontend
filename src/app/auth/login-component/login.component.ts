@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import {BACKEND_URL} from '../../constants';
+import {Component, inject} from '@angular/core';
+import {ConfigService} from '../../config/config.service';
 
 @Component({
   selector: 'login-component',
@@ -8,7 +8,8 @@ import {BACKEND_URL} from '../../constants';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  appConfig = inject(ConfigService);
   onClickYandex(): void {
-    window.location.href = `${BACKEND_URL}/oauth2/authorization/yandex`;
+    window.location.href = `${this.appConfig.getConfig().backendUrl}/oauth2/authorization/yandex`;
   }
 }
