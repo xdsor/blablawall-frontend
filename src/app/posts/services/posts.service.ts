@@ -16,8 +16,8 @@ export class PostsService {
   constructor(private http: HttpClient) { }
   appConfig = inject(ConfigService);
 
-  getAllPosts(): Observable<PostListItemsWithPageInfoDto> {
-    return this.http.get<PostListItemsWithPageInfoDto>(`${this.appConfig.getConfig().backendUrl}/api/posts`)
+  getAllPosts(page: number = 0): Observable<PostListItemsWithPageInfoDto> {
+    return this.http.get<PostListItemsWithPageInfoDto>(`${this.appConfig.getConfig().backendUrl}/api/posts?page=${page}`)
   }
 
   getPostById(id: number): Observable<PostFullDto> {

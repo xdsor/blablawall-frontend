@@ -1,0 +1,51 @@
+<nav aria-label="Page navigation">
+  <ul class="pagination">
+    <li *ngIf="displayPages[0] > 0" class="page-item">
+      <a
+        class="page-link"
+        href="#"
+        (click)="onPageChange(0); $event.preventDefault()">
+        1
+      </a>
+    </li>
+
+    <li class="page-item" *ngIf="pageInfo().number != 0">
+      <a
+        class="page-link"
+        href="#"
+        (click)="onPageChange(pageInfo().number - 1); $event.preventDefault()">
+        ...
+      </a>
+    </li>
+
+    <li
+      *ngFor="let page of displayPages"
+      class="page-item"
+      [class.active]="pageInfo().number === page">
+      <a
+        class="page-link"
+        href="#"
+        (click)="onPageChange(page); $event.preventDefault()">
+        {{ page + 1 }}
+      </a>
+    </li>
+
+    <li class="page-item" *ngIf="pageInfo().number != pageInfo().totalPages - 1">
+      <a
+        class="page-link"
+        href="#"
+        (click)="onPageChange(pageInfo().number + 1); $event.preventDefault()">
+        ...
+      </a>
+    </li>
+
+    <li *ngIf="displayPages[displayPages.length - 1] < pageInfo().totalPages - 1" class="page-item">
+      <a
+        class="page-link"
+        href="#"
+        (click)="onPageChange(pageInfo().totalPages - 1); $event.preventDefault()">
+        {{ pageInfo().totalPages }}
+      </a>
+    </li>
+  </ul>
+</nav>

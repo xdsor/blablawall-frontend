@@ -4,10 +4,14 @@
 </div>
 @if (loading()) {
   <loading-component/>
-} @else if (posts) {
-  @for (post of posts; track post.id) {
+} @else if (posts()) {
+  @for (post of posts(); track post.id) {
     <posts-list-item [post]="post"/>
   }
+  <app-pagination
+    [pageInfo]="pageInfo!!"
+    (pageChanged)="onPageChange($event)"
+  />
 } @else {
   <h1>Упс, не удалось загрузить посты :(</h1>
 }
