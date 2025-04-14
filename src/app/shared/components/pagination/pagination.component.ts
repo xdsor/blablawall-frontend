@@ -1,4 +1,4 @@
-import {Component, input, output} from '@angular/core';
+import {Component, input, OnChanges, output, SimpleChanges} from '@angular/core';
 import {PageInfo} from '../../models/PageInfo';
 import {NgForOf, NgIf} from '@angular/common';
 
@@ -11,34 +11,76 @@ import {NgForOf, NgIf} from '@angular/common';
   templateUrl: './pagination.component.html',
   styles: ``
 })
-export class PaginationComponent {
+export class PaginationComponent implements OnChanges {
   pageInfo = input.required<PageInfo>()
   pageChanged = output<number>()
   maxPages = input<number>(5)
 
-  onPageChange(page: number): void {
-    if (page >= 0 && page < this.pageInfo().totalPages && page !== this.pageInfo().number) {
-      this.pageChanged.emit(page);
+
+  visiblePages: number[] = [];
+  showLeftEllipsis = false;
+  showRightEllipsis = false;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['pageInfo'] || changes['maxPages']) {
+      this.generatePagination();
     }
   }
 
-  get displayPages(): number[] {
-    const totalPages = this.pageInfo().totalPages;
-    const currentPage = this.pageInfo().number;
-    const maxPages = this.maxPages();
-
-    if (totalPages <= maxPages) {
-      return Array.from({ length: totalPages }, (_, i) => i);
+  private generatePagination(): void {
+    if (!this.pageInfo || this.pageInfo().totalPages < 1) {
+      this.visiblePages = [];
+      this.showLeftEllipsis = false;
+      this.showRightEllipsis = false;
+      return;
     }
 
-    let startPage = Math.max(0, currentPage - Math.floor(maxPages / 2));
-    let endPage = startPage + maxPages - 1;
+    const total = this.pageInfo().totalPages;
 
-    if (endPage >= totalPages) {
-      endPage = totalPages - 1;
-      startPage = endPage - maxPages + 1;
+    if (total === 1) {
+      this.visiblePages = [];
+      this.showLeftEllipsis = false;
+      this.showRightEllipsis = false;
+      return;
     }
 
-    return Array.from({ length: maxPages }, (_, i) => startPage + i);
+    if (total <= this.maxPages()) {
+      this.visiblePages = [];
+      for (let i = 2; i < total; i++) {
+        this.visiblePages.push(i);
+      }
+      this.showLeftEllipsis = false;
+      this.showRightEllipsis = false;
+      return;
+    }
+
+    const visibleCount = this.maxPages() - 2;
+    const current = this.pageInfo().number + 1;
+
+    let start = current - Math.floor(visibleCount / 2);
+    let end = current + Math.floor(visibleCount / 2);
+
+    if (start < 2) {
+      start = 2;
+      end = start + visibleCount - 1;
+    }
+    if (end > total - 1) {
+      end = total - 1;
+      start = end - visibleCount + 1;
+    }
+
+    this.visiblePages = [];
+    for (let i = start; i <= end; i++) {
+      this.visiblePages.push(i);
+    }
+    this.showLeftEllipsis = start > 2;
+    this.showRightEllipsis = end < total - 1;
+  }
+
+  selectPage(page: number): void {
+    const current = this.pageInfo().number + 1;
+    if (page !== current) {
+      this.pageChanged.emit(page - 1);
+    }
   }
 }
