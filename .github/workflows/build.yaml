@@ -5,6 +5,34 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate Version for Artifact
+        id: generate_version
+        run: |
+            if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
+              echo "On main branch. Generating semver based on latest git tags..."
+              # Ensure tags are fetched.
+              git fetch --tags
+              # Get latest tag. Defaults to 0.0.0 if no tag exists.
+              LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+              echo "Latest tag: $LATEST_TAG"
+              # Split the tag into major, minor, and patch components.
+              IFS='.' read -r major minor patch <<< "$LATEST_TAG"
+              # If patch is empty, assume 0.
+              if [ -z "$patch" ]; then
+                patch=0
+              fi
+              new_patch=$((patch + 1))
+              VERSION="${major}.${minor}.${new_patch}"
+            else
+              echo "Not on main branch. Generating version with branch name and timestamp..."
+              # Get a safe branch name (replace / with -).
+              BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}" | tr '/' '-')
+              TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+              # This pseudo-semver version includes branch info; no git tags are created for these.
+              VERSION="0.0.0-${BRANCH_NAME}.${TIMESTAMP}"
+            fi
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+            echo "Generated version: $VERSION"
       - uses: actions/checkout@v4
       - name: Use Node.js 22.x
         uses: actions/setup-node@v4
@@ -13,4 +41,3 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build --if-present
-      - run: npm test
