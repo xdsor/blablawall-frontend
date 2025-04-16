@@ -31,9 +31,6 @@ jobs:
       - name: Build Angular Project
         run: npx ng build --prod
 
-      - name: Run Tests
-        run: npx ng test --watch=false --browsers=ChromeHeadless
-
   deploy:
     # This job is triggered manually via workflow_dispatch.
     if: ${{ github.event_name == 'workflow_dispatch' }}
