@@ -1,0 +1,134 @@
+name: Build, Test, and Deploy
+
+on:
+  push:
+    branches:
+      - '**'   # Runs on every push
+  workflow_dispatch:
+    inputs:
+      upgrade_major:
+        description: 'Set to true to upgrade major version (for main branch) instead of minor'
+        required: false
+        default: 'false'
+
+jobs:
+  build_and_test:
+    # This job is triggered automatically on every push (excluding manual dispatch).
+    if: ${{ github.event_name != 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Angular Project
+        run: npx ng build --prod
+
+      - name: Run Tests
+        run: npx ng test --watch=false --browsers=ChromeHeadless
+
+  deploy:
+    # This job is triggered manually via workflow_dispatch.
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout full code (with tags).
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # 2. Extract package name from package.json (to be used for image and container naming).
+      - name: Extract Package Name
+        id: extract_package
+        run: |
+          PACKAGE_NAME=$(jq -r '.name' package.json)
+          echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_ENV
+          echo "Extracted package name: ${PACKAGE_NAME}"
+
+      # 3. Generate version for deployment.
+      - name: Generate Version for Deployment
+        id: generate_version
+        run: |
+          # Determine the branch name from the Git ref.
+          BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
+          echo "Branch: $BRANCH"
+          if [ "$BRANCH" = "main" ]; then
+            echo "On main branch. Generating semver based on latest git tags..."
+            git fetch --tags
+            # Get the latest tag; default to 0.0.0 if none exists.
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+            echo "Latest tag: $LATEST_TAG"
+            IFS='.' read -r major minor patch <<< "$LATEST_TAG"
+            if [ -z "$major" ]; then major=0; fi
+            if [ -z "$minor" ]; then minor=0; fi
+            # Upgrade major version if the input is true; otherwise bump minor.
+            if [ "${{ github.event.inputs.upgrade_major }}" = "true" ]; then
+              new_major=$((major + 1))
+              VERSION="${new_major}.0.0"
+            else
+              new_minor=$((minor + 1))
+              VERSION="${major}.${new_minor}.0"
+            fi
+          else
+            echo "Not on main branch. Generating version with branch name and timestamp..."
+            safe_branch=$(echo "$BRANCH" | tr '/' '-')
+            TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+            VERSION="0.0.0-${safe_branch}.${TIMESTAMP}"
+          fi
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "Generated version: ${VERSION}"
+
+      # 4. Log in to the private Docker registry.
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 5. Build the Docker image using the package name and generated version.
+      - name: Build Docker Image
+        run: |
+          echo "Building Docker image with tag: ${{ secrets.DOCKER_REGISTRY }}/${{ env.PACKAGE_NAME }}:${{ env.VERSION }}"
+          docker build -t ${{ secrets.DOCKER_REGISTRY }}/${{ env.PACKAGE_NAME }}:${{ env.VERSION }} .
+
+      # 6. Push the Docker image to the private registry.
+      - name: Push Docker Image
+        run: |
+          echo "Pushing Docker image with tag: ${{ secrets.DOCKER_REGISTRY }}/${{ env.PACKAGE_NAME }}:${{ env.VERSION }}"
+          docker push ${{ secrets.DOCKER_REGISTRY }}/${{ env.PACKAGE_NAME }}:${{ env.VERSION }}
+
+      # 7. Create and push a new Git tag (only for main branch deployments).
+      - name: Create Git Tag (Only for main branch)
+        if: ${{ startsWith(github.ref, 'refs/heads/main') }}
+        run: |
+          echo "Creating Git tag: ${{ env.VERSION }}"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag ${{ env.VERSION }}
+          git push origin ${{ env.VERSION }}
+
+      # 8. Deploy to the remote Docker host.
+      - name: Deploy to Remote Docker Host
+        uses: appleboy/ssh-action@v0.1.12
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            echo "Deploying Docker container..."
+            docker pull ${{ secrets.DOCKER_REGISTRY }}/${{ env.PACKAGE_NAME }}:${{ env.VERSION }}
+            echo "Stopping any running container named '${{ env.PACKAGE_NAME }}'..."
+            docker stop ${{ env.PACKAGE_NAME }} || true
+            docker rm ${{ env.PACKAGE_NAME }} || true
+            echo "Starting a new Docker container with name '${{ env.PACKAGE_NAME }}'..."
+            docker run -d --name ${{ env.PACKAGE_NAME }} --restart unless-stopped ${{ secrets.DOCKER_REGISTRY }}/${{ env.PACKAGE_NAME }}:${{ env.VERSION }} --network prod
